@@ -8,3 +8,4 @@ router.get('/categories', getCategories);
 router.get('/:id', getProductById);
 
 export default router;
+
