@@ -1,0 +1,18 @@
+[
+  {
+    "id": "7205343b-48a4-4aff-a790-a2bff3544939",
+    "userId": "e23eb04c-7f34-4dd5-ba2b-aeb8d28924cd",
+    "address": "Драсте",
+    "phone": "3413",
+    "email": "sdfdsf@gmail.com",
+    "paymentMethod": "card",
+    "items": [
+      {
+        "productId": "2",
+        "quantity": 2
+      }
+    ],
+    "totalPrice": 1600,
+    "createdAt": "2026-02-26T19:17:57.381Z"
+  }
+]

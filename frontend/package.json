@@ -1,0 +1,12 @@
+{
+  "name": "l-shop-frontend",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "esbuild src/app.ts --bundle --outfile=public/js/app.js --target=es2020",
+    "dev": "npx serve public -l 3000"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "typescript": "^5.3.3"
+  }
+}

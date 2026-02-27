@@ -1,0 +1,4 @@
+node_modules/
+dist/
+frontend/public/js/
+*.log
