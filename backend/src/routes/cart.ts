@@ -10,3 +10,4 @@ router.put('/:productId', requireAuth, updateCartItem);
 router.delete('/:productId', requireAuth, removeFromCart);
 
 export default router;
+ 
