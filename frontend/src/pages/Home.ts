@@ -77,3 +77,4 @@ function bindAddToCartEvents(isAuth: boolean): void {
     });
   });
 }
+
