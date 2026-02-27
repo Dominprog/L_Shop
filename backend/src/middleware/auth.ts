@@ -17,3 +17,4 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
   res.locals['userId'] = userId;
   next();
 }
+
