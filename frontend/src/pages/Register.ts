@@ -37,3 +37,4 @@ export function bindRegisterEvents(onLogin: (user: User) => void): void {
 
   document.querySelector('[data-nav="/login"]')?.addEventListener('click', () => navigate('/login'));
 }
+
