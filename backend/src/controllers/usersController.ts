@@ -79,3 +79,4 @@ export function getMe(req: Request, res: Response): void {
   }
   res.json({ id: user.id, name: user.name, email: user.email, cart: user.cart, deliveries: user.deliveries });
 }
+

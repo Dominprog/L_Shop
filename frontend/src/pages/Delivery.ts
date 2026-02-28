@@ -40,3 +40,4 @@ export function bindDeliveryEvents(onSuccess: () => void): void {
     }
   });
 }
+

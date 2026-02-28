@@ -64,3 +64,4 @@ export function getDeliveries(req: Request, res: Response): void {
   }
   res.json(user.deliveries);
 }
+

@@ -48,3 +48,4 @@ export function getCategories(_req: Request, res: Response): void {
   const categories = [...new Set(products.map((p) => p.category))];
   res.json(categories);
 }
+

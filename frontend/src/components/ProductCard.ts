@@ -20,3 +20,4 @@ export function renderProductCard(product: Product): string {
     </div>
   `;
 }
+
