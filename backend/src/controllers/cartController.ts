@@ -90,3 +90,4 @@ export function removeFromCart(req: Request, res: Response): void {
   writeJson('users.json', users);
   res.json(users[userIndex].cart);
 }
+
