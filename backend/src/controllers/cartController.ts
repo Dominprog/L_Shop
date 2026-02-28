@@ -88,6 +88,5 @@ export function removeFromCart(req: Request, res: Response): void {
 
   users[userIndex].cart = users[userIndex].cart.filter((i) => i.productId !== productId);
   writeJson('users.json', users);
-  res.json(users[userIndex].cart); 
+  res.json(users[userIndex].cart);
 }
- 

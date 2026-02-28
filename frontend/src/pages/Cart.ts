@@ -78,4 +78,3 @@ export function bindCartEvents(reload: () => void): void {
     });
   });
 }
- 
