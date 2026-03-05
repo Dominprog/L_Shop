@@ -1,0 +1,39 @@
+[
+  {
+    "id": "e23eb04c-7f34-4dd5-ba2b-aeb8d28924cd",
+    "name": "Доминик",
+    "email": "dsfdsf@gmail.com",
+    "phone": "3413",
+    "password": "341134",
+    "cart": [],
+    "deliveries": [
+      {
+        "id": "7205343b-48a4-4aff-a790-a2bff3544939",
+        "userId": "e23eb04c-7f34-4dd5-ba2b-aeb8d28924cd",
+        "address": "Драсте",
+        "phone": "3413",
+        "email": "sdfdsf@gmail.com",
+        "paymentMethod": "card",
+        "items": [
+          {
+            "productId": "2",
+            "quantity": 2
+          }
+        ],
+        "totalPrice": 1600,
+        "createdAt": "2026-02-26T19:17:57.381Z"
+      }
+    ],
+    "createdAt": "2026-02-26T19:17:24.531Z"
+  },
+  {
+    "id": "7f48af13-c06a-4a94-a350-cc2eb8a6a896",
+    "name": "Домин",
+    "email": "dmkostyan1980@gmail.com",
+    "phone": "+3752954254",
+    "password": "123456",
+    "cart": [],
+    "deliveries": [],
+    "createdAt": "2026-02-26T19:18:31.975Z"
+  }
+]
