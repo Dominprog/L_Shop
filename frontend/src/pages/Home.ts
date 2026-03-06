@@ -6,7 +6,6 @@ import { navigate } from '../utils/router';
 export async function renderHome(isAuth: boolean): Promise<string> {
   const products = await api.get<Product[]>('/products');
   const categories = await api.get<string[]>('/products/categories');
-
   const cards = products.map(renderProductCard).join('');
 
   return `
@@ -34,7 +33,7 @@ export async function renderHome(isAuth: boolean): Promise<string> {
   `;
 }
 
-export function bindHomeEvents(isAuth: boolean): void {
+export function bindHomeEvents(isAuth: boolean, onCartChange: () => Promise<void>): void {
   document.getElementById('apply-filters')?.addEventListener('click', async () => {
     const search = (document.getElementById('search-input') as HTMLInputElement).value;
     const category = (document.getElementById('category-select') as HTMLSelectElement).value;
@@ -51,30 +50,54 @@ export function bindHomeEvents(isAuth: boolean): void {
     const grid = document.getElementById('products-grid');
     if (grid) {
       grid.innerHTML = products.map(renderProductCard).join('');
-      bindAddToCartEvents(isAuth);
+      bindCartGrid(isAuth, onCartChange);
     }
   });
 
-  bindAddToCartEvents(isAuth);
+  bindCartGrid(isAuth, onCartChange);
 }
 
-function bindAddToCartEvents(isAuth: boolean): void {
-  document.querySelectorAll('.add-to-cart-btn').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      if (!isAuth) {
-        navigate('/login');
-        return;
-      }
-      const productId = btn.getAttribute('data-product-id') as string;
-      const qtyInput = document.querySelector(`.qty-input[data-product-id="${productId}"]`) as HTMLInputElement;
-      const quantity = parseInt(qtyInput?.value || '1');
-      try {
-        await api.post('/cart', { productId, quantity });
-        alert('Товар добавлен в корзину!');
-      } catch (e) {
-        alert((e as Error).message);
-      }
-    });
+function bindCartGrid(isAuth: boolean, onCartChange: () => Promise<void>): void {
+  const grid = document.getElementById('products-grid');
+  if (!grid) return;
+
+  const newGrid = grid.cloneNode(true) as HTMLElement;
+  grid.parentNode?.replaceChild(newGrid, grid);
+
+  newGrid.addEventListener('click', async (e) => {
+    const btn = (e.target as HTMLElement).closest('.add-to-cart-btn') as HTMLElement | null;
+    if (!btn) return;
+    if (!isAuth) { navigate('/login'); return; }
+
+    const productId = btn.getAttribute('data-product-id') as string;
+    const qtyInput = newGrid.querySelector(`.qty-input[data-product-id="${productId}"]`) as HTMLInputElement;
+    const quantity = parseInt(qtyInput?.value || '1');
+
+    (btn as HTMLButtonElement).disabled = true;
+    try {
+      await api.post('/cart', { productId, quantity });
+      showToast('Товар добавлен в корзину!');
+      await onCartChange();
+    } catch (err) {
+      showToast((err as Error).message, true);
+    } finally {
+      (btn as HTMLButtonElement).disabled = false;
+    }
   });
 }
 
+function showToast(message: string, isError = false): void {
+  const existing = document.getElementById('toast-msg');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.id = 'toast-msg';
+  toast.textContent = message;
+  toast.style.cssText = `
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    background:${isError ? '#e53e3e' : '#38a169'};color:#fff;
+    padding:10px 24px;border-radius:8px;font-size:14px;
+    z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.2);
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
+}
