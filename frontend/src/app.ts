@@ -30,6 +30,12 @@ async function mount(content: string): Promise<void> {
   });
 }
 
+async function refreshCartCount(): Promise<void> {
+  const count = await getCartCount();
+  const link = document.getElementById('cart-nav-link');
+  if (link) link.textContent = `Корзина (${count})`;
+}
+
 async function tryRestoreSession(): Promise<void> {
   try {
     currentUser = await api.get<User>('/users/me');
@@ -41,7 +47,7 @@ async function tryRestoreSession(): Promise<void> {
 addRoute('/', async () => {
   const content = await renderHome(currentUser !== null);
   await mount(content);
-  bindHomeEvents(currentUser !== null);
+  bindHomeEvents(currentUser !== null, refreshCartCount);
 });
 
 addRoute('/register', async () => {
@@ -58,13 +64,12 @@ addRoute('/login', async () => {
 
 addRoute('/cart', async () => {
   if (!currentUser) { navigate('/login'); return; }
-  const content = await renderCart();
-  await mount(content);
-  bindCartEvents(async () => {
+  async function reloadCart(): Promise<void> {
     const content = await renderCart();
     await mount(content);
-    bindCartEvents(() => {});
-  });
+    bindCartEvents(reloadCart);
+  }
+  await reloadCart();
 });
 
 addRoute('/delivery', async () => {
