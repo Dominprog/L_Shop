@@ -3,11 +3,20 @@ import { v4 as uuidv4 } from 'uuid';
 import { readJson, writeJson } from '../middleware/fileHelper';
 import { User, RegisterBody, LoginBody } from '../types';
 
+const USER_SESSION_AGE = 24 * 60 * 60 * 1000;
+const ADMIN_SESSION_AGE = 30 * 60 * 1000;
+
 export function register(req: Request, res: Response): void {
   const { name, email, phone, password } = req.body as RegisterBody;
 
   if (!name || !email || !phone || !password) {
     res.status(400).json({ error: 'All fields are required' });
+    return;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    res.status(400).json({ error: 'Invalid email' });
     return;
   }
 
@@ -24,20 +33,19 @@ export function register(req: Request, res: Response): void {
     email,
     phone,
     password,
+    role: 'user',
     cart: [],
     deliveries: [],
+    likes: [],
+    recommendedTags: [],
     createdAt: new Date().toISOString(),
   };
 
   users.push(newUser);
   writeJson('users.json', users);
 
-  res.cookie('session', newUser.id, {
-    httpOnly: true,
-    maxAge: 10 * 60 * 1000,
-  });
-
-  res.status(201).json({ id: newUser.id, name: newUser.name, email: newUser.email });
+  res.cookie('session', newUser.id, { httpOnly: true, maxAge: USER_SESSION_AGE });
+  res.status(201).json({ id: newUser.id, name: newUser.name, email: newUser.email, role: newUser.role });
 }
 
 export function login(req: Request, res: Response): void {
@@ -56,12 +64,9 @@ export function login(req: Request, res: Response): void {
     return;
   }
 
-  res.cookie('session', user.id, {
-    httpOnly: true,
-    maxAge: 10 * 60 * 1000,
-  });
-
-  res.json({ id: user.id, name: user.name, email: user.email });
+  const maxAge = user.role === 'admin' ? ADMIN_SESSION_AGE : USER_SESSION_AGE;
+  res.cookie('session', user.id, { httpOnly: true, maxAge });
+  res.json({ id: user.id, name: user.name, email: user.email, role: user.role });
 }
 
 export function logout(_req: Request, res: Response): void {
@@ -77,6 +82,5 @@ export function getMe(req: Request, res: Response): void {
     res.status(404).json({ error: 'User not found' });
     return;
   }
-  res.json({ id: user.id, name: user.name, email: user.email, cart: user.cart, deliveries: user.deliveries });
+  res.json({ id: user.id, name: user.name, email: user.email, role: user.role, cart: user.cart, deliveries: user.deliveries });
 }
-
