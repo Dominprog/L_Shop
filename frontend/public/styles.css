@@ -245,3 +245,27 @@ h2 {
   margin-bottom: 20px;
   font-size: 22px;
 }
+
+.product-rating { color: #d69e2e; font-size: 13px; margin: 2px 0; }
+.product-actions { display: flex; gap: 8px; margin-top: 8px; align-items: center; }
+
+.btn-like {
+  background: none; border: 1px solid #e2e8f0; border-radius: 20px;
+  padding: 4px 12px; cursor: pointer; font-size: 16px; transition: all 0.2s;
+}
+.btn-like:hover { border-color: #fc8181; }
+.btn-like.liked { color: #e53e3e; border-color: #fc8181; }
+
+.btn-comments {
+  background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8;
+  border-radius: 20px; padding: 4px 12px; cursor: pointer; font-size: 12px;
+}
+
+.recommendations { margin-bottom: 32px; }
+.recommendations h2 { color: #d69e2e; margin-bottom: 12px; }
+.recommended-grid { border: 2px solid #fefcbf; border-radius: 12px; padding: 12px; background: #fffff0; }
+
+table th, table td { padding: 8px 12px; border-bottom: 1px solid #e2e8f0; }
+table tr:hover td { background: #f7fafc; }
+
+.btn-edit { background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8; border-radius: 6px; padding: 4px 10px; cursor: pointer; }

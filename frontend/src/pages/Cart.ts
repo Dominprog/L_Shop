@@ -1,12 +1,19 @@
 import { api } from '../utils/api';
 import { CartItemWithProduct } from '../types';
 import { navigate } from '../utils/router';
+import { t } from '../utils/i18n';
 
 export async function renderCart(): Promise<string> {
+  const locale = t();
   const items = await api.get<CartItemWithProduct[]>('/cart');
 
   if (items.length === 0) {
-    return `<div class="page"><h2>Корзина пуста</h2><button class="btn" id="go-home">К товарам</button></div>`;
+    return `
+      <div class="page">
+        <h2>${locale.cart.empty}</h2>
+        <button class="btn" id="go-home">${locale.cart.goHome}</button>
+      </div>
+    `;
   }
 
   const total = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
@@ -15,8 +22,8 @@ export async function renderCart(): Promise<string> {
     <div class="cart-item">
       <img src="${item.product.imageUrl}" class="cart-img" alt="${item.product.name}" />
       <div class="cart-item-info">
-        <h3 data-title="basket">${item.product.name}</h3>
-        <p data-price="basket">${item.product.price} руб. × ${item.quantity} = ${item.product.price * item.quantity} руб.</p>
+        <h3>${item.product.name}</h3>
+        <p>${item.product.price} руб. × ${item.quantity} = ${item.product.price * item.quantity} руб.</p>
       </div>
       <div class="cart-item-controls">
         <button class="btn-sm" data-decrease="${item.productId}">−</button>
@@ -29,53 +36,56 @@ export async function renderCart(): Promise<string> {
 
   return `
     <div class="page">
-      <h2>Корзина</h2>
+      <h2>${locale.cart.title}</h2>
       ${rows}
-      <div class="cart-total">
-        <strong>Итого: ${total} руб.</strong>
+      <div class="cart-total"><strong>${locale.cart.total}: ${total} руб.</strong></div>
+      <div style="display:flex;gap:12px;margin-top:16px;">
+        <button class="btn" id="go-home">${locale.cart.goHome}</button>
+        <button class="btn" id="go-delivery">${locale.cart.checkout}</button>
       </div>
-      <button class="btn" id="go-delivery">Оформить доставку</button>
     </div>
   `;
 }
 
-export function bindCartEvents(reload: () => void): void {
+export function bindCartEvents(reload: () => Promise<void>): void {
   document.getElementById('go-home')?.addEventListener('click', () => navigate('/'));
   document.getElementById('go-delivery')?.addEventListener('click', () => navigate('/delivery'));
 
-  document.querySelectorAll('[data-increase]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const productId = btn.getAttribute('data-increase') as string;
-      const items = await api.get<CartItemWithProduct[]>('/cart');
-      const item = items.find((i) => i.productId === productId);
-      if (item) {
-        await api.put(`/cart/${productId}`, { quantity: item.quantity + 1 });
-        reload();
-      }
-    });
-  });
+  const page = document.querySelector('.page');
+  if (!page) return;
 
-  document.querySelectorAll('[data-decrease]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const productId = btn.getAttribute('data-decrease') as string;
-      const items = await api.get<CartItemWithProduct[]>('/cart');
-      const item = items.find((i) => i.productId === productId);
-      if (item && item.quantity > 1) {
-        await api.put(`/cart/${productId}`, { quantity: item.quantity - 1 });
-        reload();
-      } else {
+  page.addEventListener('click', async (e) => {
+    const target = e.target as HTMLElement;
+    const inc = target.closest('[data-increase]') as HTMLElement | null;
+    const dec = target.closest('[data-decrease]') as HTMLElement | null;
+    const rem = target.closest('[data-remove]') as HTMLElement | null;
+    if (!inc && !dec && !rem) return;
+
+    const allBtns = page.querySelectorAll('button');
+    allBtns.forEach((b) => ((b as HTMLButtonElement).disabled = true));
+
+    try {
+      if (inc) {
+        const productId = inc.getAttribute('data-increase') as string;
+        const items = await api.get<CartItemWithProduct[]>('/cart');
+        const item = items.find((i) => i.productId === productId);
+        if (item) await api.put(`/cart/${productId}`, { quantity: item.quantity + 1 });
+      } else if (dec) {
+        const productId = dec.getAttribute('data-decrease') as string;
+        const items = await api.get<CartItemWithProduct[]>('/cart');
+        const item = items.find((i) => i.productId === productId);
+        if (item) {
+          if (item.quantity > 1) await api.put(`/cart/${productId}`, { quantity: item.quantity - 1 });
+          else await api.delete(`/cart/${productId}`);
+        }
+      } else if (rem) {
+        const productId = rem.getAttribute('data-remove') as string;
         await api.delete(`/cart/${productId}`);
-        reload();
       }
-    });
-  });
-
-  document.querySelectorAll('[data-remove]').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      const productId = btn.getAttribute('data-remove') as string;
-      await api.delete(`/cart/${productId}`);
-      reload();
-    });
+      await reload();
+    } catch (err) {
+      alert((err as Error).message);
+      allBtns.forEach((b) => ((b as HTMLButtonElement).disabled = false));
+    }
   });
 }
-

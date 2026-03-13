@@ -1,3 +1,21 @@
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'user' | 'admin';
+  cart: CartItem[];
+  deliveries: Delivery[];
+}
+
+export interface CartItem {
+  productId: string;
+  quantity: number;
+}
+
+export interface CartItemWithProduct extends CartItem {
+  product: Product;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -7,26 +25,22 @@ export interface Product {
   available: boolean;
   imageUrl: string;
   stock: number;
+  tags: string[];
 }
 
-export interface CartItemWithProduct {
-  productId: string;
-  quantity: number;
-  product: Product;
-}
-
-export interface User {
+export interface Comment {
   id: string;
-  name: string;
-  email: string;
+  userId: string;
+  userName: string;
+  productId: string;
+  text: string;
+  rating: number;
+  createdAt: string;
 }
 
 export interface Delivery {
   id: string;
   address: string;
-  phone: string;
-  email: string;
-  paymentMethod: string;
   totalPrice: number;
   createdAt: string;
 }
