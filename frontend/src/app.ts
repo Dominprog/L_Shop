@@ -35,6 +35,12 @@ async function refreshCartCount(): Promise<void> {
   updateCartCountInHeader(count);
 }
 
+async function refreshCartCount(): Promise<void> {
+  const count = await getCartCount();
+  const link = document.getElementById('cart-nav-link');
+  if (link) link.textContent = `Корзина (${count})`;
+}
+
 async function tryRestoreSession(): Promise<void> {
   try {
     currentUser = await api.get<User>('/users/me');
