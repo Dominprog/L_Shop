@@ -15,7 +15,7 @@ const router = Router();
  * @swagger
  * /users/register:
  *   post:
- *     summary: Регистрация нового пользователя
+ *     summary: Регистрация
  *     tags: [Users]
  *     requestBody:
  *       required: true
@@ -41,7 +41,7 @@ router.post('/register', register);
  * @swagger
  * /users/login:
  *   post:
- *     summary: Вход в аккаунт
+ *     summary: Вход
  *     tags: [Users]
  *     requestBody:
  *       required: true
@@ -65,7 +65,7 @@ router.post('/login', login);
  * @swagger
  * /users/logout:
  *   post:
- *     summary: Выход из аккаунта
+ *     summary: Выход
  *     tags: [Users]
  *     responses:
  *       200:
@@ -77,7 +77,7 @@ router.post('/logout', logout);
  * @swagger
  * /users/me:
  *   get:
- *     summary: Получить текущего пользователя
+ *     summary: Текущий пользователь
  *     tags: [Users]
  *     security:
  *       - cookieAuth: []

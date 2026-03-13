@@ -4,8 +4,8 @@ const BASE_URL = 'http://localhost:3001/api';
  * Базовая функция для HTTP-запросов к API.
  * @template T - тип ожидаемого ответа
  * @param {string} method - HTTP-метод: GET, POST, PUT, DELETE
- * @param {string} path - путь запроса, например '/products'
- * @param {object} [body] - тело запроса для POST/PUT
+ * @param {string} path - путь запроса
+ * @param {object} [body] - тело запроса
  * @returns {Promise<T>} распарсенный ответ сервера
  * @throws {Error} если сервер вернул ошибку
  */
@@ -24,10 +24,7 @@ async function request<T>(method: string, path: string, body?: object): Promise<
 }
 
 /**
- * Объект с методами для работы с API сервера.
- * @example
- * const products = await api.get<Product[]>('/products');
- * const user = await api.post<User>('/users/login', { email, password });
+ * Объект с методами для работы с API.
  */
 export const api = {
   /** GET-запрос */

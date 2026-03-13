@@ -1,12 +1,19 @@
 import { api } from '../utils/api';
 import { CartItemWithProduct } from '../types';
 import { navigate } from '../utils/router';
+import { t } from '../utils/i18n';
 
 export async function renderCart(): Promise<string> {
+  const locale = t();
   const items = await api.get<CartItemWithProduct[]>('/cart');
 
   if (items.length === 0) {
-    return `<div class="page"><h2>Корзина пуста</h2><button class="btn" id="go-home">К товарам</button></div>`;
+    return `
+      <div class="page">
+        <h2>${locale.cart.empty}</h2>
+        <button class="btn" id="go-home">${locale.cart.goHome}</button>
+      </div>
+    `;
   }
 
   const total = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
@@ -29,12 +36,12 @@ export async function renderCart(): Promise<string> {
 
   return `
     <div class="page">
-      <h2>Корзина</h2>
+      <h2>${locale.cart.title}</h2>
       ${rows}
-      <div class="cart-total"><strong>Итого: ${total} руб.</strong></div>
+      <div class="cart-total"><strong>${locale.cart.total}: ${total} руб.</strong></div>
       <div style="display:flex;gap:12px;margin-top:16px;">
-        <button class="btn" id="go-home">← Продолжить покупки</button>
-        <button class="btn" id="go-delivery">Оформить доставку →</button>
+        <button class="btn" id="go-home">${locale.cart.goHome}</button>
+        <button class="btn" id="go-delivery">${locale.cart.checkout}</button>
       </div>
     </div>
   `;
@@ -82,4 +89,3 @@ export function bindCartEvents(reload: () => Promise<void>): void {
     }
   });
 }
-

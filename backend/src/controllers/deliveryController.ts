@@ -26,6 +26,20 @@ export function createDelivery(req: Request, res: Response): void {
   }
 
   const products = readJson<Product[]>('products.json');
+
+  // Проверить что всех товаров хватает
+  for (const item of user.cart) {
+    const product = products.find((p) => p.id === item.productId);
+    if (!product) {
+      res.status(400).json({ error: `Товар ${item.productId} не найден` });
+      return;
+    }
+    if (product.stock < item.quantity) {
+      res.status(400).json({ error: `Товар "${product.name}" — доступно только ${product.stock} шт.` });
+      return;
+    }
+  }
+
   const totalPrice = user.cart.reduce((sum, item) => {
     const product = products.find((p) => p.id === item.productId);
     return sum + (product ? product.price * item.quantity : 0);
@@ -47,6 +61,16 @@ export function createDelivery(req: Request, res: Response): void {
   deliveries.push(delivery);
   writeJson('deliveries.json', deliveries);
 
+  // Списать stock товаров
+  user.cart.forEach((item) => {
+    const product = products.find((p) => p.id === item.productId);
+    if (product) {
+      product.stock = Math.max(0, product.stock - item.quantity);
+      if (product.stock === 0) product.available = false;
+    }
+  });
+  writeJson('products.json', products);
+
   users[userIndex].deliveries.push(delivery);
   users[userIndex].cart = [];
   writeJson('users.json', users);
@@ -64,4 +88,3 @@ export function getDeliveries(req: Request, res: Response): void {
   }
   res.json(user.deliveries);
 }
-

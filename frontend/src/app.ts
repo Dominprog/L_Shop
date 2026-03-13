@@ -1,11 +1,13 @@
 import { addRoute, handleRoute, navigate } from './utils/router';
 import { api } from './utils/api';
-import { renderHeader, bindHeaderEvents } from './components/Header';
+import { renderHeader, bindHeaderEvents, updateCartCountInHeader } from './components/Header';
 import { renderHome, bindHomeEvents } from './pages/Home';
 import { renderRegister, bindRegisterEvents } from './pages/Register';
 import { renderLogin, bindLoginEvents } from './pages/Login';
 import { renderCart, bindCartEvents } from './pages/Cart';
 import { renderDeliveryForm, bindDeliveryEvents } from './pages/Delivery';
+import { renderAdmin, bindAdminEvents } from './pages/Admin';
+import { renderLangBanner, bindLangBanner } from './components/LangBanner';
 import { User, CartItemWithProduct } from './types';
 
 let currentUser: User | null = null;
@@ -23,11 +25,14 @@ async function getCartCount(): Promise<number> {
 async function mount(content: string): Promise<void> {
   const cartCount = await getCartCount();
   const app = document.getElementById('app') as HTMLElement;
-  app.innerHTML = renderHeader(currentUser, cartCount) + content;
-  bindHeaderEvents(() => {
-    currentUser = null;
-    navigate('/');
-  });
+  app.innerHTML = renderHeader(currentUser, cartCount) + content + renderLangBanner();
+  bindHeaderEvents(() => { currentUser = null; navigate('/'); });
+  bindLangBanner(() => window.location.reload());
+}
+
+async function refreshCartCount(): Promise<void> {
+  const count = await getCartCount();
+  updateCartCountInHeader(count);
 }
 
 async function refreshCartCount(): Promise<void> {
@@ -53,13 +58,13 @@ addRoute('/', async () => {
 addRoute('/register', async () => {
   const content = renderRegister();
   await mount(content);
-  bindRegisterEvents((user) => { currentUser = user; });
+  bindRegisterEvents((user) => { currentUser = user as User; navigate('/'); });
 });
 
 addRoute('/login', async () => {
   const content = renderLogin();
   await mount(content);
-  bindLoginEvents((user) => { currentUser = user; });
+  bindLoginEvents((user) => { currentUser = user as User; navigate('/'); });
 });
 
 addRoute('/cart', async () => {
@@ -77,6 +82,16 @@ addRoute('/delivery', async () => {
   const content = renderDeliveryForm();
   await mount(content);
   bindDeliveryEvents(() => {});
+});
+
+addRoute('/admin', async () => {
+  if (!currentUser || currentUser.role !== 'admin') { navigate('/'); return; }
+  async function reloadAdmin(): Promise<void> {
+    const content = await renderAdmin();
+    await mount(content);
+    bindAdminEvents(reloadAdmin);
+  }
+  await reloadAdmin();
 });
 
 (async () => {

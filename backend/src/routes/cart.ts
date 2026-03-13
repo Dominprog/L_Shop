@@ -8,22 +8,20 @@ const router = Router();
  * @swagger
  * tags:
  *   name: Cart
- *   description: Управление корзиной
+ *   description: Корзина
  */
 
 /**
  * @swagger
  * /cart:
  *   get:
- *     summary: Получить корзину пользователя
+ *     summary: Получить корзину
  *     tags: [Cart]
  *     security:
  *       - cookieAuth: []
  *     responses:
  *       200:
- *         description: Список товаров в корзине
- *       401:
- *         description: Не авторизован
+ *         description: Корзина пользователя
  */
 router.get('/', requireAuth, getCart);
 
@@ -55,7 +53,7 @@ router.post('/', requireAuth, addToCart);
  * @swagger
  * /cart/{productId}:
  *   put:
- *     summary: Обновить количество товара
+ *     summary: Обновить количество
  *     tags: [Cart]
  *     security:
  *       - cookieAuth: []
@@ -64,14 +62,6 @@ router.post('/', requireAuth, addToCart);
  *         name: productId
  *         required: true
  *         schema: { type: string }
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               quantity: { type: number }
  *     responses:
  *       200:
  *         description: Количество обновлено
@@ -82,7 +72,7 @@ router.put('/:productId', requireAuth, updateCartItem);
  * @swagger
  * /cart/{productId}:
  *   delete:
- *     summary: Удалить товар из корзины
+ *     summary: Удалить из корзины
  *     tags: [Cart]
  *     security:
  *       - cookieAuth: []
@@ -93,7 +83,7 @@ router.put('/:productId', requireAuth, updateCartItem);
  *         schema: { type: string }
  *     responses:
  *       200:
- *         description: Товар удалён
+ *         description: Удалено
  */
 router.delete('/:productId', requireAuth, removeFromCart);
 

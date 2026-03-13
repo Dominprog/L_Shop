@@ -1,17 +1,31 @@
+export type UserRole = 'user' | 'admin';
+
+export interface RecommendedTag {
+  tag: string;
+  timestamp: number;
+}
+
 export interface User {
   id: string;
   name: string;
   email: string;
   phone: string;
   password: string;
+  role: UserRole;
   cart: CartItem[];
   deliveries: Delivery[];
+  likes: string[];
+  recommendedTags: RecommendedTag[];
   createdAt: string;
 }
 
 export interface CartItem {
   productId: string;
   quantity: number;
+}
+
+export interface CartItemWithProduct extends CartItem {
+  product: Product;
 }
 
 export interface Product {
@@ -23,6 +37,17 @@ export interface Product {
   available: boolean;
   imageUrl: string;
   stock: number;
+  tags: string[];
+}
+
+export interface Comment {
+  id: string;
+  userId: string;
+  userName: string;
+  productId: string;
+  text: string;
+  rating: number;
+  createdAt: string;
 }
 
 export interface Delivery {
@@ -66,4 +91,20 @@ export interface ProductsQuery {
   category?: string;
   available?: string;
   sort?: string;
+}
+
+export interface ProductBody {
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  available: boolean;
+  imageUrl: string;
+  stock: number;
+  tags: string[];
+}
+
+export interface CommentBody {
+  text: string;
+  rating: number;
 }
